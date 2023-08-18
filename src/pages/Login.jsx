@@ -4,6 +4,9 @@ import { async } from "@firebase/util";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { useRedirectActiveUser } from "../hooks/useRedirectActiveUser";
+import { Formik } from "formik";
+import * as Yup from "yup"
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -15,35 +18,52 @@ const Login = () => {
 
     useRedirectActiveUser(user, '/dashboard')
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
+    const onSubmit = async ({ email, password }) => {
         try {
             const user = await login({ email, password })
             console.log(user)
         } catch (error) {
             console.log(error)
         }
-
-
     }
-
-
-
-
 
 
     return (
         <>
             <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
 
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Formik
+                initialValues={{ email: "", password: "" }}
+                onSubmit={onSubmit}
+            >
+
+                {({ values, handleSubmit, handleChange }) => (
 
 
-                <button type="submit">Login</button>
-            </form>
+                    <form onSubmit={handleSubmit}>
+
+                        <input type="text"
+                            value={values.email}
+                            onChange={handleChange}
+                            name="email"
+                        />
+                        <input type="text"
+                            value={values.password}
+                            onChange={handleChange}
+                            name="password"
+                        />
+
+
+                        <button type="submit">Login</button>
+                    </form>
+
+                )}
+
+
+
+            </Formik>
+
+
         </>)
 };
 
